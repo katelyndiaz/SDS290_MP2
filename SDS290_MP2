@@ -1,0 +1,43 @@
+---
+title: "Lab Name"
+author: "Author Name"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(readr)
+library(ELMR) # can handle the missing data
+```
+
+```{r setup, message = FALSE, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  echo = TRUE, 
+  warning = FALSE
+)
+```
+
+```{r code-chunk-label}
+data <- read.csv("SDS290_MP2.csv")
+
+data <- data[-c(1:2),]
+
+data$Date_1<- as.integer(data$Date_1)
+data$Date_2<- as.integer(data$Date_2)
+data$Date_3<- as.integer(data$Date_3)
+# grep("Date_", colnames(data))
+# cols<- names(data[24:26])
+data <- data %>%
+  select(Gender, Core_Attraction, Sexual_Orientation, Date_1, Date_2, Date_3, App, Bio) %>%
+  na.omit() %>%
+  filter(!is.na(Gender))
+data
+```
+
+### Exercise 2
+
+...
+
