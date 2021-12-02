@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r code-chunk-label}
-data <- read.csv("SDS290_MP2.csv")
+data <- read.csv("SDS290_MP2data.csv")
 
 data <- data[-c(1:2),] #removing top two rows
 # Turning characters into integers
