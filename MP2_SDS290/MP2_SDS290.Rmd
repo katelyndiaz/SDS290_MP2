@@ -40,4 +40,181 @@ data <- data %>%
 data
 ```
 
+
+```{r}
+data %>%
+  group_by(App, Bio) %>%
+  count()
+```
+
+```{r}
+#Exploratory Visualizations
+
+ggplot(data, aes(x = App, y = attraction, fill = Bio)) + 
+  geom_boxplot()
+
+ggplot(data, aes(x = App, y = attraction, color = Bio)) +
+  geom_point() +
+  geom_jitter()
+```
+
+## Conditions
+
+C and A can be assumed.
+
+```{r}
+#S
+
+ds <- data %>%
+  group_by(App, Bio) %>%
+  summarise(n = n(),
+            mean = mean(attraction),
+            sd = sd(attraction)
+  )
+ds
+
+ds %>% 
+  ungroup() %>%
+  summarise(max(sd)/min(sd))
+
+#Variances are equal
+```
+
+### Formal Analysis without interaction
+
+```{r}
+mod <- lm(attraction ~ App + Bio, data = data)
+anova(mod)
+
+#Not Significant
+```
+
+### Checking for Interaction
+
+```{r}
+ggplot(data, aes(x = App, y = attraction, 
+                    group = Bio, 
+                    color = Bio)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = 0) +
+  geom_jitter()
+
+#Slight interaction
+```
+
+### Two way Anova
+
+```{r}
+mod_int <- lm(attraction ~ App * Bio, data = data)
+anova(mod_int)
+
+#Not Significant
+```
+
+```{r}
+# N and Z
+qplot(x = mod_int$residuals, bins = 6)
+plot(mod_int, which = 2)
+plot(mod_int, which = 1)
+
+#Relatively normal and centered on 0
+```
+
+None of our hypotheses were correct.
+
+# More exploring
+
+```{r}
+mod_int2 <- lm(Date_1 ~ App * Bio, data = data)
+anova(mod_int2)
+
+mod_int3 <- lm(Date_2 ~ App * Bio, data = data)
+anova(mod_int3)
+
+mod_int4 <- lm(Date_3 ~ App * Bio, data = data)
+anova(mod_int4)
+```
+
+## Messaging Exploration
+
+```{r}
+#Exploratory Visualizations
+
+ggplot(data, aes(x = App, y = Date_2, fill = Bio)) + 
+  geom_boxplot()
+
+ggplot(data, aes(x = App, y = Date_2, color = Bio)) +
+  geom_point() +
+  geom_jitter()
+```
+### Conditions
+
+C and A can be assumed.
+
+```{r}
+#S
+
+ds <- data %>%
+  group_by(App, Bio) %>%
+  summarise(n = n(),
+            mean = mean(Date_2),
+            sd = sd(Date_2)
+  )
+ds
+
+ds %>% 
+  ungroup() %>%
+  summarise(max(sd)/min(sd))
+
+#Variances are equal
+```
+
+### Formal Analysis without interaction
+
+```{r}
+mod <- lm(Date_2 ~ App + Bio, data = data)
+anova(mod)
+
+#Bio is Significant
+```
+
+### Checking for Interaction
+
+```{r}
+ggplot(data, aes(x = App, y = Date_2, 
+                    group = Bio, 
+                    color = Bio)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = 0) +
+  geom_jitter()
+
+#Slight interaction
+```
+
+### Two way Anova
+
+```{r}
+mod_int <- lm(attraction ~ App * Bio, data = data)
+anova(mod_int)
+
+#Not Significant
+```
+
+```{r}
+# N and Z
+qplot(x = mod_int$residuals, bins = 6)
+plot(mod_int, which = 2)
+plot(mod_int, which = 1)
+
+#Relatively normal and centered on 0
+```
+
+A two way ANOVA without interaction found significant evidence that the inclination to message someone is different depending on the type of Bio
+
+
+
+
+
+
+
 ...
