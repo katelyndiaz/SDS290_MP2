@@ -1,16 +1,10 @@
 ---
 title: "MP2"
-author: "Katelyn Diaz, Salwa O, Jiselle Ramierez, AJ Haller"
+author: "Katelyn Diaz, Salwa Ouachtouki, Jiselle Ramirez, AJ Haller"
 date: "`r Sys.Date()`"
 output: openintro::lab_report
 ---
 
-```{r load-packages, message=FALSE}
-library(tidyverse)
-library(openintro)
-library(readr)
-library(ELMR) # can handle the missing data
-```
 
 ```{r setup, message = FALSE, include=FALSE}
 knitr::opts_chunk$set(
@@ -18,6 +12,13 @@ knitr::opts_chunk$set(
   echo = TRUE, 
   warning = FALSE
 )
+```
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(readr)
+library(ELMR) # can handle the missing data
 ```
 
 ```{r code-chunk-label}
