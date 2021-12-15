@@ -6,6 +6,14 @@ output: openintro::lab_report
 ---
 
 
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(readr)
+library(car)
+library(ELMR) # can handle the missing data
+```
+
 ```{r setup, message = FALSE, include=FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
@@ -14,15 +22,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r load-packages, message=FALSE}
-library(tidyverse)
-library(openintro)
-library(readr)
-library(ELMR) # can handle the missing data
-```
-
-```{r code-chunk-label}
-data <- read.csv("SDS290_MP2data.csv")
+```{r Data Wrangling}
+data <- read.csv("SDS290_MP2.csv")
 
 data <- data[-c(1:2),] #removing top two rows
 # Turning characters into integers
@@ -30,33 +31,69 @@ data$Date_1<- as.integer(data$Date_1)
 data$Date_2<- as.integer(data$Date_2)
 data$Date_3<- as.integer(data$Date_3)
 
-# grep("Date_", colnames(data))
-# cols<- names(data[24:26])
+
+# For those who are attracted to either but got a woman profile
+data$Core_Attraction[data$ResponseId == "R_V2UevjhK4UnPmy5"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_6xHhUJhk696WyB3"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3kmGSOrdAk5puSH"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3pcfqpTHnRV7Cju"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_290J1qA5xIQg2mK"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_2dNpwMPlUQACxmd"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_274eaoafNmrPYnp"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3Hny656zgvdHb2s"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_2wLWhXn3EDCJqPn"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3noXNPFgToZbWh1"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3FV7p5fr0afhDD5"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_ze5FVlED54G4cet"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3EVTj66CowfcUb4"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_3KOfLuDutKd6qc1"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_2ayGRcFcYWK0jRi"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_272JPXVYATqLUbz"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_1JKpV4XnhKXFjqe"]<- "Women"
+data$Core_Attraction[data$ResponseId == "R_274eaoafNmrPYnp"]<- "Women"
+
+# For those who are attracted to either but got a man's profile
+data$Core_Attraction[data$ResponseId == "R_2rueH05SuYZgIn0"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_1QxqvQ0KrK7xjR0"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_b7cIT65mNhTfcBP"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_1fl9qMkhZzjmf0a"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_1Caa5kDquAnIXyo"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_1ODCSbsXgXzLEUm"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_RDdoh3MZRv7d3Pz"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_3nV0ZXsUDhsr3Lw"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2t2K6YtKnOY7bPB"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_3j3w5WOyhLFIZDM"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2CDozL5RSFEgjtu"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2D8Eyyj1qcYfgBw"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2YmJ5ZkpIGVMe8G"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2v2s0qn6mhFEl8O"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_1DDedD5Wz8gulRZ"]<- "Men"
+data$Core_Attraction[data$ResponseId == "R_2X4MIZmcPZIKndZ"]<- "Men"
 
 data <- data %>%
-  select(Gender, Core_Attraction, Sexual_Orientation, Date_1, Date_2, Date_3, App, Bio) %>%
+  select(ResponseId, Gender, Core_Attraction, Sexual_Orientation, Date_1, Date_2, Date_3, App, Bio) %>%
   na.omit() %>%
   filter(!is.na(Gender))%>% #removed completely empty rows
-  mutate(attraction = (Date_1+Date_2+Date_3)/3) 
-data
-```
+  mutate(attraction = (Date_1+Date_2+Date_3)/3) %>% 
+  filter(Core_Attraction != "Either")
 
 
-```{r}
-data %>%
-  group_by(App, Bio) %>%
-  count()
+#RAW ALPHA
+alpha(select(data, Date_1, Date_2, Date_3))
+
 ```
 
 ```{r}
 #Exploratory Visualizations
 
 ggplot(data, aes(x = App, y = attraction, fill = Bio)) + 
-  geom_boxplot()
+  geom_boxplot()+ 
+  facet_wrap(~Core_Attraction)
 
 ggplot(data, aes(x = App, y = attraction, color = Bio)) +
   geom_point() +
-  geom_jitter()
+  geom_jitter()  + 
+  facet_wrap(~Core_Attraction)
 ```
 
 ## Conditions
@@ -64,10 +101,8 @@ ggplot(data, aes(x = App, y = attraction, color = Bio)) +
 C and A can be assumed.
 
 ```{r}
-#S
-
 ds <- data %>%
-  group_by(App, Bio) %>%
+  group_by(App, Bio, Core_Attraction) %>%
   summarise(n = n(),
             mean = mean(attraction),
             sd = sd(attraction)
@@ -78,17 +113,26 @@ ds %>%
   ungroup() %>%
   summarise(max(sd)/min(sd))
 
+
+leveneTest(attraction ~ App*Bio*Core_Attraction, data = data)
+
+
+# Using Levene’s Test for homogeneity of variance, we fail to reject the null hypothesis, that is we fail to find evidence that the S condition is not met, F(7,144)=1.0155, p=0.4229. We can proceed as if this condition is met.
+
 #Variances are equal
 ```
 
 ### Formal Analysis without interaction
 
 ```{r}
-mod <- lm(attraction ~ App + Bio, data = data)
+mod <- lm(attraction ~ App + Bio + Core_Attraction, data = data)
 anova(mod)
 
 #Not Significant
+
 ```
+ 
+
 
 ### Checking for Interaction
 
@@ -97,16 +141,23 @@ ggplot(data, aes(x = App, y = attraction,
                     group = Bio, 
                     color = Bio)) +
   geom_point() +
-  geom_smooth(method = "lm", se = 0) +
-  geom_jitter()
+  geom_smooth(method = "lm", se = 0) + 
+  facet_wrap(~Core_Attraction)
+#   geom_jitter()
 
 #Slight interaction
+
+#No interaction for men
+#Slight interaction for women
+
+#for men<- No main effect of Bio but slight main effect for App
+#for woman<- No main effect of App but slight main effect for Bio
 ```
 
 ### Two way Anova
 
 ```{r}
-mod_int <- lm(attraction ~ App * Bio, data = data)
+mod_int <- lm(attraction ~ App + Bio + Core_Attraction + App*Bio + Core_Attraction*Bio + App*Bio*Core_Attraction, data = data)
 anova(mod_int)
 
 #Not Significant
@@ -114,108 +165,27 @@ anova(mod_int)
 
 ```{r}
 # N and Z
-qplot(x = mod_int$residuals, bins = 6)
+qplot(x = mod_int$residuals, bins = 5)
 plot(mod_int, which = 2)
 plot(mod_int, which = 1)
 
-#Relatively normal and centered on 0
 ```
 
 None of our hypotheses were correct.
 
-# More exploring
+### Confidence intervals and Effect sizes
 
 ```{r}
-mod_int2 <- lm(Date_1 ~ App * Bio, data = data)
-anova(mod_int2)
+data_women<- data %>%
+  filter(Core_Attraction == "Women")
 
-mod_int3 <- lm(Date_2 ~ App * Bio, data = data)
-anova(mod_int3)
 
-mod_int4 <- lm(Date_3 ~ App * Bio, data = data)
-anova(mod_int4)
+mod <- aov(attraction ~ App*Bio, data = data_women)
+TukeyHSD(mod)
+
+
+# Based on Tukey's HSD, the differences between different apps and different bios are not significant because our confidence intervals include zero
 ```
 
-## Messaging Exploration
-
-```{r}
-#Exploratory Visualizations
-
-ggplot(data, aes(x = App, y = Date_2, fill = Bio)) + 
-  geom_boxplot()
-
-ggplot(data, aes(x = App, y = Date_2, color = Bio)) +
-  geom_point() +
-  geom_jitter()
-```
-### Conditions
-
-C and A can be assumed.
-
-```{r}
-#S
-
-ds <- data %>%
-  group_by(App, Bio) %>%
-  summarise(n = n(),
-            mean = mean(Date_2),
-            sd = sd(Date_2)
-  )
-ds
-
-ds %>% 
-  ungroup() %>%
-  summarise(max(sd)/min(sd))
-
-#Variances are equal
-```
-
-### Formal Analysis without interaction
-
-```{r}
-mod <- lm(Date_2 ~ App + Bio, data = data)
-anova(mod)
-
-#Bio is Significant
-```
-
-### Checking for Interaction
-
-```{r}
-ggplot(data, aes(x = App, y = Date_2, 
-                    group = Bio, 
-                    color = Bio)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = 0) +
-  geom_jitter()
-
-#Slight interaction
-```
-
-### Two way Anova
-
-```{r}
-mod_int <- lm(attraction ~ App * Bio, data = data)
-anova(mod_int)
-
-#Not Significant
-```
-
-```{r}
-# N and Z
-qplot(x = mod_int$residuals, bins = 6)
-plot(mod_int, which = 2)
-plot(mod_int, which = 1)
-
-#Relatively normal and centered on 0
-```
-
-A two way ANOVA without interaction found significant evidence that the inclination to message someone is different depending on the type of Bio
 
 
-
-
-
-
-
-...
